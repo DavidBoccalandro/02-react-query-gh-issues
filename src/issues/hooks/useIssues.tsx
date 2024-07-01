@@ -8,7 +8,7 @@ import { State } from '../interfaces/issue';
 interface Props {
 	state?: State;
 	labels: string[];
-	page: number;
+	page?: number;
 }
 
 const getIssues = async ({ labels, state, page }: Props): Promise<Issue[]> => {
@@ -19,7 +19,7 @@ const getIssues = async ({ labels, state, page }: Props): Promise<Issue[]> => {
 	if (state) params.append('state', state);
 	if (labels.length > 0) params.append('labels', labels.join(','));
 
-	params.append('page', page.toString());
+	params.append('page', page!.toString());
 	params.append('per_page', '5');
 
 	const { data } = await githubApi.get<Issue[]>('/issues', { params });

@@ -1,3 +1,5 @@
-export { useIssues } from './useIssues';
-export { useLabels } from './useLabels';
 export { useIssue } from './useIssue';
+export { useIssues } from './useIssues';
+export { useIssuesInfinite } from './useIssuesInfinite';
+export { useLabels } from './useLabels';
+

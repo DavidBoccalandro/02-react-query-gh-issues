@@ -13,7 +13,7 @@ export const IssueItem: FC<Props> = ({ issue }: Props) => {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient(); // Esto es para poder hacer prefetch de los datos de los issues.
 
-	const onMouseEnter = () => {
+	const prefetchData = () => {
 		// prefetchQuery toma dos parámetros:
 		// 1. La clave de la consulta (query key), que es un array que identifica de manera única la consulta.
 		//    En este caso, ['issue', issue.number] y ['issue', issue.number, 'comments'].
@@ -24,15 +24,34 @@ export const IssueItem: FC<Props> = ({ issue }: Props) => {
 		// queryClient.prefetchQuery({
 		// queryKey: ['issue', issue.number],
 		// queryFn: () => getIssueInfo(issue.number.toString()) });
+
+		// agregar updatedAt
 		queryClient.prefetchQuery(['issue', issue.number], () => getIssueInfo(issue.number.toString()));
 		queryClient.prefetchQuery(['issue', issue.number, 'comments'], () => getIssueComments(issue.number.toString()));
+	};
+
+	const preSetData = () => {
+		// Además de poder setear cosas por prefetch, pidiendo al back de antemano,
+		// también podemos setear data en el caché de react query manualmente.
+		queryClient.setQueryData(['issue', issue.number], issue, {
+			// updatedAt es para que no se actualice la data en el caché
+			// hasta tanto no ocurra el plazo que le ingresamos allí.
+			// En este caso, 100.000 milisegundos, es decir, 100 segundos después,
+			// lo reinsertaría en el caché. Sería como el "staleTime" en fetch y prefetch,
+			// pero acá en setQueryData se usa el updatedAt.
+			updatedAt: new Date().getTime() + 100000,
+		});
+		queryClient.setQueryData(['issue', issue.number, 'comments'], issue.comments, {
+			updatedAt: new Date().getTime() + 100000,
+		});
 	};
 
 	return (
 		<div
 			className="card mb-2 issue"
 			onClick={() => navigate(`/issues/issue/${issue.number}`)}
-			onMouseEnter={onMouseEnter}
+			// onMouseEnter={prefetchData}
+			onMouseEnter={preSetData}
 		>
 			<div className="card-body d-flex align-items-center">
 				{issue.state === State.Open ? <FiInfo size={30} color="red" /> : <FiCheckCircle size={30} color="green" />}

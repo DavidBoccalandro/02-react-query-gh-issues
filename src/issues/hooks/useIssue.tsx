@@ -29,3 +29,8 @@ export const useIssue = (issueNumber: string) => {
 
 	return { issueQuery, commentsQuery };
 };
+
+// Algo importante a considerar es que también podemos tener prefetch, o precargadas las informaciones de cada issue.
+// Esto es muy útil para que al momento de abrir la aplicación, se precarguen los datos de los issues, y no se tengan que esperar.
+
+// Aparentemente hay técnicas como el prefetch en el hover de un issue, pero también aprovechar la lista que ya tenemos en caché.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { githubApi } from '../../apis/githubApi';
 import { sleep } from '../../helpers/sleep';
@@ -29,6 +29,10 @@ const getIssues = async ({ labels, state, page }: Props): Promise<Issue[]> => {
 export const useIssues = ({ state, labels }: Props) => {
 	const [page, setPage] = useState(1);
 
+	useEffect(() => {
+		setPage(1);
+	}, [state, labels]);
+
 	const issuesQuery = useQuery(['issues', { state, labels, page }], () => getIssues({ labels, state, page }));
 
 	const nextPage = () => {
@@ -46,7 +50,7 @@ export const useIssues = ({ state, labels }: Props) => {
 		issuesQuery,
 
 		// getter
-		page,
+		page: issuesQuery.isFetching ? 'Loading...' : page,
 		// methods
 		nextPage,
 		prevPage,
